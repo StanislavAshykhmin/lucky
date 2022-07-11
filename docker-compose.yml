@@ -1,0 +1,43 @@
+version: '2'
+services:
+  lucky_web:
+        container_name: lucky-web-container
+        build:
+            context: ./data/docker/web
+            dockerfile: dev/Dockerfile
+            args:
+                HOST_UID: ${HOST_UID}
+        restart: always
+        volumes:
+            - .:/var/www/html
+        links:
+            - lucky_db
+            - lucky_redis
+        depends_on:
+            - lucky_db
+            - lucky_redis
+
+  lucky_db:
+        container_name:  lucky-db-container
+        build:
+            context: ./data/docker/db
+            args:
+                HOST_UID: ${HOST_UID}
+        restart: always
+        volumes:
+            - ./data/volumes/db:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE:  lucky
+            MYSQL_USER: docker
+            MYSQL_PASSWORD: secret
+
+  lucky_redis:
+        container_name:  lucky-redis-container
+        restart: always
+        build:
+            context: ./data/docker/redis
+            args:
+                HOST_UID: ${HOST_UID}
+        volumes:
+            - ./data/volumes/redis:/data

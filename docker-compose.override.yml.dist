@@ -1,0 +1,5 @@
+version: '2'
+services:
+  lucky_web:
+        ports:
+            - "45280:80"
